@@ -5,7 +5,9 @@ const TASKS_KEY = 'task-tracker-tasks'
 export const useTaskStore = defineStore('tasks', {
   state: () => ({
     tasks: JSON.parse(localStorage.getItem(TASKS_KEY)) || [],
-    nextId: 1,
+    nextId: JSON.parse(localStorage.getItem(TASKS_KEY))?.length
+  ? Math.max(...JSON.parse(localStorage.getItem(TASKS_KEY)).map(t => t.id)) + 1
+  : 1,
   }),
   actions: {
     addTask(title) {
@@ -14,13 +16,13 @@ export const useTaskStore = defineStore('tasks', {
         this.saveTasks()
       }
     },
-    toggleTask(id) {
-      const task = this.tasks.find(t => t.id === id)
-      if (task) {
-        task.done = !task.done
-        this.saveTasks()
-      }
-    },
+toggleTask(id) {
+  const index = this.tasks.findIndex(t => t.id === id)
+  if (index !== -1) {
+    this.tasks[index].done = !this.tasks[index].done
+    this.saveTasks()
+  }
+},
     removeTask(id) {
       this.tasks = this.tasks.filter(t => t.id !== id)
       this.saveTasks()

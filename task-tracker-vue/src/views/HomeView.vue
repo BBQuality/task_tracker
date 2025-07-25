@@ -1,6 +1,6 @@
 <template>
   <div class="p-4">
-    <h1>Task Tracker</h1>
+    <h1>Планувальник</h1>
     <TaskList />
   </div>
 </template>
