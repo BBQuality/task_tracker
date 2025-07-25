@@ -1,0 +1,16 @@
+body {
+  font-family: sans-serif;
+  background: #f9f9f9;
+  color: #333;
+}
+
+input[type="text"] {
+  padding: 8px;
+  width: 200px;
+  margin-right: 8px;
+}
+
+button {
+  padding: 6px 10px;
+  cursor: pointer;
+}
