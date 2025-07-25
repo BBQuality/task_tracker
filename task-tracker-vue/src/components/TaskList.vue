@@ -23,7 +23,7 @@
     >
       <template #item="{ element }">
         <li>
-          <input type="checkbox" v-model="element.done" @change="toggle(element.id)" />
+          <input type="checkbox" :checked="element.done" @change="toggle(element.id)"/>
           <span :style="{ textDecoration: element.done ? 'line-through' : 'none' }">
             {{ element.title }}
           </span>
@@ -32,7 +32,16 @@
       </template>
     </draggable>
 
-
+    <!-- Інші фільтри -->
+    <ul v-else>
+      <li v-for="task in filteredTasks" :key="task.id">
+        <input type="checkbox" :checked="task.done" @change="toggle(task.id)"/>
+        <span :style="{ textDecoration: task.done ? 'line-through' : 'none' }">
+          {{ task.title }}
+        </span>
+        <button @click="remove(task.id)">🗑️</button>
+      </li>
+    </ul>
   </div>
 </template>
 
