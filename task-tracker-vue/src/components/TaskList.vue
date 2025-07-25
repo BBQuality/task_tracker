@@ -1,32 +1,80 @@
 <template>
   <div>
+    <!-- Форма додавання -->
     <form @submit.prevent="add">
-      <input v-model="title" placeholder="New task..." />
-      <button>Add</button>
+      <input v-model="title" placeholder="Нова задача..." />
+      <button>Додати</button>
     </form>
 
-    <ul>
-      <li v-for="task in tasks" :key="task.id">
-        <input type="checkbox" v-model="task.done" @change="toggle(task.id)" />
-        <span :style="{ textDecoration: task.done ? 'line-through' : 'none' }">{{ task.title }}</span>
-        <button @click="remove(task.id)">🗑️</button>
+    <!-- Кнопки фільтра -->
+    <div class="filters">
+      <button @click="filter = 'all'">Усі</button>
+      <button @click="filter = 'active'">Активні</button>
+      <button @click="filter = 'done'">Виконані</button>
+    </div>
+
+    <!-- Список задач -->
+    
+  <!-- Якщо "усі" — використовуємо draggable -->
+  <draggable
+    v-if="filter === 'all'"
+    v-model="store.tasks"
+    tag="ul"
+    item-key="id"
+    @end="store.saveTasks()"
+  >
+    <template #item="{ element }">
+      <li>
+        <input type="checkbox" v-model="element.done" @change="toggle(element.id)" />
+        <span :style="{ textDecoration: element.done ? 'line-through' : 'none' }">
+          {{ element.title }}
+        </span>
+        <button @click="remove(element.id)">🗑️</button>
       </li>
-    </ul>
+    </template>
+  </draggable>
+
+  <!-- Якщо активні або виконані — просто ul -->
+  <ul v-else>
+    <li v-for="task in filteredTasks" :key="task.id">
+      <input type="checkbox" v-model="task.done" @change="toggle(task.id)" />
+      <span :style="{ textDecoration: task.done ? 'line-through' : 'none' }">
+        {{ task.title }}
+      </span>
+      <button @click="remove(task.id)">🗑️</button>
+    </li>
+  </ul>
+
+
+<ul v-else>
+  <li v-for="tasks in filteredTasks" :key="tasks.id">...</li>
+</ul>
+
+
+    
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useTaskStore } from '../stores/taskStore'
+import draggable from 'vuedraggable'
 
 const store = useTaskStore()
 const title = ref('')
+const filter = ref('all')
 
 const add = () => {
   store.addTask(title.value)
   title.value = ''
 }
+
 const toggle = store.toggleTask
 const remove = store.removeTask
-const tasks = store.tasks
+
+const filteredTasks = computed(() => {
+  if (filter.value === 'active') return store.tasks.filter(t => !t.done)
+  if (filter.value === 'done') return store.tasks.filter(t => t.done)
+  return store.tasks
+})
 </script>
